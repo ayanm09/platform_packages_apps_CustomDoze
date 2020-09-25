@@ -81,13 +81,25 @@ public class TiltSensor implements SensorEventListener {
 	if (!raiseToWakeEnabled && !Utils.pocketGestureEnabled(mContext))
 	    mInsidePocket = false;
 
-        if (event.values[0] == 1 && !mInsidePocket) {
-	    if (raiseToWakeEnabled) {
-                mSensorWakeLock.acquire(WAKELOCK_TIMEOUT_MS);
-                mPowerManager.wakeUp(SystemClock.uptimeMillis(),
-                    PowerManager.WAKE_REASON_GESTURE, TAG);
-            } else {
-                Utils.launchDozePulse(mContext);
+       if (mSensor == Utils.getSensor(mSensorManager, "qti.sensor.amd")) {
+            if (event.values[0] == 2) {
+                if (isRaiseToWake) {
+                    mWakeLock.acquire(WAKELOCK_TIMEOUT_MS);
+                    mPowerManager.wakeUp(SystemClock.uptimeMillis(),
+                            PowerManager.WAKE_REASON_GESTURE, TAG);
+                } else {
+                    Utils.launchDozePulse(mContext);
+                }
+            }
+        } else {
+            if (event.values[0] == 1) {
+                if (isRaiseToWake) {
+                    mWakeLock.acquire(WAKELOCK_TIMEOUT_MS);
+                    mPowerManager.wakeUp(SystemClock.uptimeMillis(),
+                            PowerManager.WAKE_REASON_GESTURE, TAG);
+                } else {
+                    Utils.launchDozePulse(mContext);
+                }
             }
         }
     }
